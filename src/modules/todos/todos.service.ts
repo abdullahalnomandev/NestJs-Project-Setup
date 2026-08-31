@@ -4,7 +4,7 @@ import { Todo, TodoDocument } from './schemas/todos.schema';
 import { Model } from 'mongoose';
 import { CreateTodoDto } from './dto/create-todo.dto';
 import { UpdateTodoDto } from './dto/update-todo.dto';
-import { TodoQueryDto } from './dto/todo-query.dto/todo-query.dto';
+import QueryBuilder from 'src/builder/QueryBuilder';
 
 @Injectable()
 export class TodosService {
@@ -12,28 +12,43 @@ export class TodosService {
     @InjectModel(Todo.name) private readonly todoModel: Model<TodoDocument>,
   ) {}
 
-  async getAllTodos(query: TodoQueryDto) {
-    const { page, limit } = query;
-    const [todos, total] = await Promise.all([
-      this.todoModel
-        .find()
-        .skip((page - 1) * limit)
-        .limit(limit)
-        .exec(),
-      this.todoModel.countDocuments(),
-    ]);
-
-    const totalPages = Math.ceil(total / limit);
+  async getAllTodos(query: Record<string, unknown>) {
+    const packageQuery = new QueryBuilder(this.todoModel.find(), query)
+      .filter()
+      .sort()
+      .paginate()
+      .fields()
+      .search(['title', 'description']);
+    
+    const result = await packageQuery.modelQuery;
+    const pagination = packageQuery.getPaginationInfo();
     return {
-      meta: {
-        page,
-        limit,
-        total,
-        totalPages,
-      },
-      data: todos,
+      data: result,
+      meta: pagination,
     };
   }
+  // async getAllTodos(query: TodoQueryDto) {
+  //   const { page, limit } = query;
+  //   const [todos, total] = await Promise.all([
+  //     this.todoModel
+  //       .find()
+  //       .skip((page - 1) * limit)
+  //       .limit(limit)
+  //       .exec(),
+  //     this.todoModel.countDocuments(),
+  //   ]);
+
+  //   const totalPage = Math.ceil(total / limit);
+  //   return {
+  //     meta: {
+  //       page,
+  //       limit,
+  //       total,
+  //       totalPage,
+  //     },
+  //     data: todos,
+  //   };
+  // }
 
   createTodo(createTodoDto: CreateTodoDto) {
     const todos = new this.todoModel(createTodoDto);
