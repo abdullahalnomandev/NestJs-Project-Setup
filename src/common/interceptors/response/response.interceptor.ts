@@ -9,41 +9,41 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 @Injectable()
-export class ResponseInterceptor<T> implements NestInterceptor<T, any> {
-  intercept(context: ExecutionContext, next: CallHandler<T>): Observable<any> {
+export class ResponseInterceptor<T>
+  implements NestInterceptor<T, any>
+{
+  intercept(
+    context: ExecutionContext,
+    next: CallHandler<T>,
+  ): Observable<any> {
     const request = context.switchToHttp().getRequest();
-
-    const method = request.method;
-    const url = request.url;
 
     return next.handle().pipe(
       map((data) => ({
         success: true,
-        message: this.getMessage(method, url),
+        message: this.getMessage(request.method),
         data,
       })),
     );
   }
 
-  private getMessage(method: string, url: string): string {
-    if (method === 'POST') {
-      return 'Resource created successfully';
-    }
+  private getMessage(method: string): string {
+    switch (method) {
+      case 'POST':
+        return 'Resource created successfully';
 
-    if (method === 'PATCH') {
-      return 'Resource updated successfully';
-    }
+      case 'PATCH':
+      case 'PUT':
+        return 'Resource updated successfully';
 
-    if (method === 'DELETE') {
-      return 'Resource deleted successfully';
-    }
+      case 'DELETE':
+        return 'Resource deleted successfully';
 
-    if (method === 'GET') {
-      return url.includes('/todos/')
-        ? 'Todo fetched successfully'
-        : 'Todos fetched successfully';
-    }
+      case 'GET':
+        return 'Resource fetched successfully';
 
-    return 'Request successful';
+      default:
+        return 'Request successful';
+    }
   }
 }

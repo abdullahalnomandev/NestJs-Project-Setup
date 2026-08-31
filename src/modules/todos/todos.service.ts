@@ -25,13 +25,13 @@ export class TodosService {
 
     const totalPages = Math.ceil(total / limit);
     return {
-      data: todos,
       meta: {
         page,
         limit,
         total,
         totalPages,
       },
+      data: todos,
     };
   }
 
