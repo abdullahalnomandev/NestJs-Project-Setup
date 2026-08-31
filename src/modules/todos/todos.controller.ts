@@ -1,9 +1,10 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
 import { TodosService } from './todos.service';
 import { CreateTodoDto } from './dto/create-todo.dto';
 import { UpdateTodoDto } from './dto/update-todo.dto';
 import { MongoIdPipe } from 'src/common/pipes/mongo-id/mongo-id.pipe';
-import { TodoQueryDto } from './dto/todo-query.dto/todo-query.dto';
+import { BaseQueryDto } from 'src/common/dto/base-query.dto';
+import { QueryParams } from 'src/common/decorators/query-params.decorator';
 
 @Controller('todos')
 export class TodosController {
@@ -11,8 +12,8 @@ export class TodosController {
 
   // GET ALL TODOOS
   @Get()
-  getTodos(@Query() query: TodoQueryDto) {
-    return this.todosService.getAllTodos(query);
+  getTodos(@QueryParams() query: BaseQueryDto) {
+    return this.todosService.getAllTodos(query as unknown as Record<string, unknown>);
   }
 
   // CREATE TODO
