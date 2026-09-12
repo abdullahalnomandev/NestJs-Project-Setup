@@ -1,4 +1,4 @@
-import { Controller, Get, Param, ParseIntPipe, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseIntPipe, Post, Query } from '@nestjs/common';
 import { TicketsService } from './tickets.service';
 import { Ticket } from './ticket.interface';
 
@@ -14,6 +14,11 @@ export class TicketsController {
   @Get(":id")
   findOne(@Param("id", ParseIntPipe) id: number) {
     return this.ticketsService.findOne(id);
+  }
+
+  @Post()
+  create(@Body() ticketData: Omit<Ticket, 'id' | 'createdAt'>) {
+    return this.ticketsService.createTicket(ticketData);
   }
 }
  

@@ -29,14 +29,15 @@ export class TicketsService {
       createdAt: '2023-01-03',
     },
   ];
+  private nextId = 4;
 
-  findAll(status?:Ticket['status'],priority?:Ticket['priority']) {
+  findAll(status?: Ticket['status'], priority?: Ticket['priority']) {
     let tickets = this.tickets;
 
-    if(status){
+    if (status) {
       tickets = tickets.filter((ticket) => ticket.status === status);
     }
-    if(priority){
+    if (priority) {
       tickets = tickets.filter((ticket) => ticket.priority === priority);
     }
     return tickets;
@@ -48,6 +49,21 @@ export class TicketsService {
     if (!ticket) {
       throw new NotFoundException(`Ticket ${id} not found`);
     }
+    return ticket;
+  }
+
+  createTicket(ticketData: Omit<Ticket, 'id' | 'createdAt'>) {
+    const ticket: Ticket = {
+      id: this.nextId++,
+      subject: ticketData.subject,
+      description: ticketData.description,
+      priority: ticketData.priority,
+      status: ticketData.status,
+      createdAt: new Date().toISOString(),
+    };
+
+    this.tickets.push(ticket);
+
     return ticket;
   }
 }
