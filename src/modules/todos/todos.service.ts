@@ -21,10 +21,10 @@ export class TodosService {
       .search(['title', 'description']);
     
     const result = await packageQuery.modelQuery;
-    const pagination = packageQuery.getPaginationInfo();
+    const pagination = await packageQuery.getPaginationInfo();
     return {
       data: result,
-      meta: pagination,
+      meta: pagination ,
     };
   }
   // async getAllTodos(query: TodoQueryDto) {

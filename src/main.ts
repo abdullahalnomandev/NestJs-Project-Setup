@@ -12,13 +12,13 @@ async function bootstrap() {
     new ValidationPipe({
       whitelist: true, // Remove extra fields
       forbidNonWhitelisted: true, // Throw error for extra fields
-      transform: true, // Transform to DTO
-      stopAtFirstError: true, // Stop at first error
+      // transform: true, // Transform to DTO
+      // stopAtFirstError: true, // Stop at first error
     }),
   );
 
   app.useGlobalInterceptors(new ResponseInterceptor());
-  await app.listen(process.env.PORT ?? 3000);
+  await app.listen(process.env.PORT ?? 4000);
 }
 bootstrap();
 

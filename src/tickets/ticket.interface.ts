@@ -7,4 +7,5 @@ export interface Ticket {
     createdAt: string;
 }
 
+
 // nest g interface tickets/ticket --flat(used flat to ignore folder)

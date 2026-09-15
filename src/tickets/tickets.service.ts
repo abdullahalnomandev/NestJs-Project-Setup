@@ -1,5 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Ticket } from './ticket.interface';
+import { CreateTicketDto } from './dto/create-ticket.dto';
+import { UpdateTicketDto } from './dto/update-ticket.dto';
 
 @Injectable()
 export class TicketsService {
@@ -52,18 +54,36 @@ export class TicketsService {
     return ticket;
   }
 
-  createTicket(ticketData: Omit<Ticket, 'id' | 'createdAt'>) {
+  createTicket(createTicketDto: CreateTicketDto) {
     const ticket: Ticket = {
       id: this.nextId++,
-      subject: ticketData.subject,
-      description: ticketData.description,
-      priority: ticketData.priority,
-      status: ticketData.status,
+      subject: createTicketDto.subject,
+      description: createTicketDto.description,
+      priority: createTicketDto.priority,
+      status: 'open',
       createdAt: new Date().toISOString(),
     };
 
     this.tickets.push(ticket);
 
+    return ticket;
+  }
+
+ update(id: number, updateTicketDto: UpdateTicketDto) {
+    const ticket = this.findOne(id);
+    if (ticket.status === 'closed') {
+      throw new NotFoundException(`Ticket ${id} is closed`);
+    }
+    Object.assign(ticket, updateTicketDto);
+    return ticket;
+  }
+
+  closeTicket(id: number) {
+    const ticket = this.findOne(id);
+    if (ticket.status === 'closed') {
+      throw new NotFoundException(`Ticket ${id} is already closed`);
+    }
+    ticket.status = 'closed';
     return ticket;
   }
 }
